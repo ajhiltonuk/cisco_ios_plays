@@ -1,19 +1,15 @@
 ---
-- name: Cisco ios facts demo
-  # gather_facts: false
-  tasks:
-    - name: Gather IOS facts
-      cisco.ios.ios_facts:
-        gather_subset: all
-        available_network_resources: true
-        gather_network_resources: l3_interfaces
-        
-    - name: Print ansible_facts
-      ansible.builtin.debug:
-        msg:
-          - "{{ ansible_facts }}"
+- name: Gather IOS facts from Cisco devices
+  hosts: routers
+  gather_facts: no
+  collections:
+    - cisco.ios
 
-    # - name: Print ansible_facts
-    #   ansible.builtin.debug:
-    #     msg:
-    #       - "{{ ansible_facts.net_config.split('\n') }}"
+  tasks:
+    - name: Collect IOS facts
+      ios_facts:
+      register: ios_device_facts
+
+    - name: Display hostname and version
+      debug:
+        msg: "Device {{ inventory_hostname }} is running {{ ios_device_facts.ansible_facts.ansible_net_version }}"
